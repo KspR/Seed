@@ -80,11 +80,11 @@ var instance = new Seed.extend({
 instance.on('click', function() {
   console.log('yay!');
 });
-
+```
 
 ### About
 
-####  Who uses sandjs ?
+#### Who uses sandjs ?
 * [Whibo](http://whibo.com) (collaborative real-time whiteboard)
 
 #### Authors 
