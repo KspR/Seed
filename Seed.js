@@ -1,5 +1,9 @@
 (function(name) {
 
+  var Seed = window[name] = function() {
+    this.init.apply(this, arguments);
+  };
+
   var extend = function(o, p) {
     for (var i in p) {
       o[i] = p[i];
@@ -11,10 +15,6 @@
     var r = {};
     for (var i in o) r[i] = o[i];
     return r;
-  };
-
-  var Seed = window[name] = function() {
-    this.init.apply(this, arguments);
   };
 
   Seed.prototype = {
@@ -35,19 +35,37 @@
       }
 
       if (o) {
-        if (o.mediator) this.mediator = o.mediator;
+        if (o.mediator && !this.isMediator) this.mediator = o.mediator;
         if (o.super) this.super = o.super;
       }
 
       this.$setOptions(o || {});
       if (this.tpl) {
-        this.el = toDOM(typeof(this.tpl) === 'function' ? this.tpl() : this.tpl, this);
+        this.el = r.toDOM(typeof(this.tpl) === 'function' ? this.tpl() : this.tpl, this);
         if (o && o.parentEl) o.parentEl.appendChild(this.el);
       }
     },
 
     query : function(query) {
-      return this.mediator.$responses[query].apply(this.mediator, arguments);
+      var direct = this.mediator.respondsTo[query];
+      if (direct) {
+        return direct.apply(this.mediator, arguments);
+      }
+      else {
+        for (var i in this.mediator.respondsTo) {
+          if (i[i.length - 1] === '*') {
+            if (i.slice(0, i.length - 1) === query.slice(0, i.length - 1)) {
+              return this.mediator.respondsTo[i].apply(this.mediator, arguments);
+            }
+          }
+        }
+      }
+
+      if (this.mediator.responds) {
+        return this.mediator.responds(query);
+      }
+
+      throw 'query : ' + query + ' not found';
     },
 
     destroy : function() {
@@ -92,9 +110,8 @@
             self.$unbind(event, f);
           }
         };
-
         observers.push(observer);
-        scope && scope.$observers.push(observer);
+        scope && scope.$observers && scope.$observers.push(observer);
       }
 
       return {
