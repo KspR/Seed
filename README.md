@@ -85,7 +85,7 @@ instance.on('click', function() {
 ### About
 
 #### Who uses sandjs ?
-* [Whibo](http://whibo.com) (collaborative real-time whiteboard)
+* [wallDraft](http://walldraft.com) (collaborative real-time whiteboard)
 
 #### Authors 
 * [Pierre Colle](https://github.com/piercus)
